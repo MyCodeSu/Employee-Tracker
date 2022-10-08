@@ -1,5 +1,5 @@
-create database employer_trackerDB;
-use employer_trackerDB;
+create database employee_trackerDB;
+use employee_trackerDB;
 
 create table employee (
     id integer not null auto_increment,
