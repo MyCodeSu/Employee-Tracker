@@ -1,8 +1,6 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const consoleTable = require("console.table");
-const { connect } = require("http2");
-const { exit } = require("process");
 
 // Database connection
 var connection = mysql.createConnection({
@@ -141,4 +139,56 @@ function addEmployee() {
                 mainMenu();
             });
         });
+}
+
+function addDepartment() {
+    inquirer.prompt({
+        type: "input",
+        message: "What is the new department called?",
+        name: "newDepartment"
+    })
+        .then(function (res) {
+            const newDepartment = res.newDepartment;
+            const userInput = `INSERT INTO department (department_name) VALUES ("${newDepartment}")`;
+            connection.userInput(userInput, function (err, res) {
+                if (err) {
+                    throw err;
+                }
+                console.table(res);
+                mainMenu();
+            });
+        });
+}
+
+function addRole() {
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "What is the position title?",
+            name: "positionTitle"
+        },
+        {
+            type: "input",
+            message: "What is the salary for the position?",
+            name: "positionSalary"
+        },
+        {
+            type: "input",
+            message: "What is the position's department ID?",
+            name: "positionDeptID"
+        },
+    ])
+    .then(function (res) {
+        const positionTitle = res.positionTitle;
+        const salary = res.positionSalary;
+        const positionDeptID = res.positionDeptID;
+        const userInput = `INSERT INTO role (title, salary, department_id) VALUES ("${positionTitle}", "${salary}", "${positionDeptID}")`;
+        connection.userInput(userInput, function (err, res) {
+            if (err) {
+                throw err;
+            }
+            console.table(res);
+            mainMenu();
+        });
+    });
 }
