@@ -192,3 +192,30 @@ function addRole() {
         });
     });
 }
+
+function updateEmployeeRole() {
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "What is employee's ID to be updated?",
+            name: "updateEE"
+        },
+        {
+            type: "input",
+            message: "What is the role ID of the employee's new role?",
+            name: "roleChange"
+        },
+    ])
+    .then(function (res) {
+        const updateEE = res.updateEE;
+        const roleChange = res.roleChange;
+        const userInput = `UPDATE employee SET role_id = "${roleChange}" WHERE id = "${updateEE}"`;
+        connection.userInput(userInput, function (err, res) {
+            if (err) {
+                throw err;
+            }
+            console.table(res);
+            mainMenu();
+        });
+    });
+}
