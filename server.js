@@ -22,9 +22,9 @@ function mainMenu() {
         name: "mainMenu",
         message: "What is your query?",
         choices: [
-            "View All Employees",
             "View All Departments",
             "View All Roles",
+            "View All Employees",         
             "Add Employee",
             "Add Department",
             "Add Role",
@@ -70,8 +70,8 @@ function mainMenu() {
 }
 
 function viewAllEmployees() {
-    var userInput = "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name AS department, role.salary FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department on role.department_id = department.id"
-    connection.userInput(userInput, function (err, res) {
+    var query = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name AS department, role.salary FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department on role.department_id = department.id`
+    connection.query(query, function (err, res) {
         if (err) {
             throw err;
         }
@@ -81,19 +81,16 @@ function viewAllEmployees() {
 }
 
 function viewAllDepartments() {
-    var userInput = "SELECT * FROM department"
-    connection.userInput(userInput, function (err, res) {
-        if (err) {
-            throw err;
-        }
+    var query = `SELECT * FROM department`
+    connection.query(query, function (err, res) {
         console.table(res);
         mainMenu();
     });
 }
 
 function viewAllRoles() {
-    var userInput = "SELECT * FROM role"
-    connection.userInput(userInput, function (err, res) {
+    var query = `SELECT * FROM role`
+    connection.query(query, function (err, res) {
         if (err) {
             throw err;
         }
@@ -130,8 +127,8 @@ function addEmployee() {
             const lastName = res.lastName;
             const eeRoleID = res.addEmployeeRole;
             const eeMgrID = res.addDirectMgr;
-            const userInput = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${firstName}", "${lastName}", "${eeRoleID}", "${eeMgrID}")`;
-            connection.userInput(userInput, function (err, res) {
+            const query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${firstName}", "${lastName}", "${eeRoleID}", "${eeMgrID}")`;
+            connection.query(query, function (err, res) {
                 if (err) {
                     throw err;
                 }
@@ -149,8 +146,8 @@ function addDepartment() {
     })
         .then(function (res) {
             const newDepartment = res.newDepartment;
-            const userInput = `INSERT INTO department (department_name) VALUES ("${newDepartment}")`;
-            connection.userInput(userInput, function (err, res) {
+            const query = `INSERT INTO department (department_name) VALUES ("${newDepartment}")`;
+            connection.query(query, function (err, res) {
                 if (err) {
                     throw err;
                 }
@@ -182,8 +179,8 @@ function addRole() {
         const positionTitle = res.positionTitle;
         const salary = res.positionSalary;
         const positionDeptID = res.positionDeptID;
-        const userInput = `INSERT INTO role (title, salary, department_id) VALUES ("${positionTitle}", "${salary}", "${positionDeptID}")`;
-        connection.userInput(userInput, function (err, res) {
+        const query = `INSERT INTO role (title, salary, department_id) VALUES ("${positionTitle}", "${salary}", "${positionDeptID}")`;
+        connection.query(query, function (err, res) {
             if (err) {
                 throw err;
             }
@@ -209,8 +206,8 @@ function updateEmployeeRole() {
     .then(function (res) {
         const updateEE = res.updateEE;
         const roleChange = res.roleChange;
-        const userInput = `UPDATE employee SET role_id = "${roleChange}" WHERE id = "${updateEE}"`;
-        connection.userInput(userInput, function (err, res) {
+        const query = `UPDATE employee SET role_id = "${roleChange}" WHERE id = "${updateEE}"`;
+        connection.query(query, function (err, res) {
             if (err) {
                 throw err;
             }
