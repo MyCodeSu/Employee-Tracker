@@ -1,6 +1,8 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const consoleTable = require("console.table");
+const { connect } = require("http2");
+const { exit } = require("process");
 
 // Database connection
 var connection = mysql.createConnection({
@@ -11,3 +13,132 @@ var connection = mysql.createConnection({
     database: "employee_trackerDB"
 });
 
+connection.connect(function (err) {
+    if (err) throw err;
+    mainMenu();
+})
+
+function mainMenu() {
+    inquirer.prompt({
+        type: "list",
+        name: "mainMenu",
+        message: "What is your query?",
+        choices: [
+            "View All Employees",
+            "View All Departments",
+            "View All Roles",
+            "Add Employee",
+            "Add Department",
+            "Add Role",
+            "Update Employee Role",
+            "Quit"
+        ]
+    })
+        .then(function (answer) {
+            switch (answer.mainMenu) {
+                case "View All Employees":
+                    viewAllEmployees();
+                    break;
+
+                case "View All Departments":
+                    viewAllDepartments();
+                    break;
+
+                case "View All Roles":
+                    viewAllRoles();
+                    break;
+
+                case "Add Employee":
+                    addEmployee();
+                    break;
+
+                case "Add Department":
+                    addDepartment();
+                    break;
+
+                case "Add Role":
+                    addRole();
+                    break;
+
+                case "Update Employee Role":
+                    updateEmployeeRole();
+                    break;
+
+                case "Quit":
+                    quit();
+                    break;
+            }
+        });
+}
+
+function viewAllEmployees() {
+    var userInput = "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name AS department, role.salary FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department on role.department_id = department.id"
+    connection.userInput(userInput, function (err, res) {
+        if (err) {
+            throw err;
+        }
+        console.table(res);
+        mainMenu();
+    });
+}
+
+function viewAllDepartments() {
+    var userInput = "SELECT * FROM department"
+    connection.userInput(userInput, function (err, res) {
+        if (err) {
+            throw err;
+        }
+        console.table(res);
+        mainMenu();
+    });
+}
+
+function viewAllRoles() {
+    var userInput = "SELECT * FROM role"
+    connection.userInput(userInput, function (err, res) {
+        if (err) {
+            throw err;
+        }
+        console.table(res);
+        mainMenu();
+    });
+}
+
+function addEmployee() {
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "What is the employee's first name",
+            name: "firstName"
+        },
+        {
+            type: "input",
+            message: "What is the employee's last name",
+            name: "lastName"
+        },
+        {
+            type: "input",
+            message: "What is the employee's role ID",
+            name: "addEmployeeRole"
+        },
+        {
+            type: "input",
+            message: "What is the employee's manager ID",
+            name: "addDirectMgr"
+        }
+    ])
+        .then(function (res) {
+            const firstName = res.firstName;
+            const lastName = res.lastName;
+            const eeRoleID = res.addEmployeeRole;
+            const eeMgrID = res.addDirectMgr;
+            const userInput = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${firstName}", "${lastName}", "${eeRoleID}", "${eeMgrID}")`;
+            connection.userInput(userInput, function (err, res) {
+                if (err) {
+                    throw err;
+                }
+                console.table(res);
+                mainMenu();
+            });
+        });
+}
